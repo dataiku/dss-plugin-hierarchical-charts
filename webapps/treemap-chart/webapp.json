@@ -23,12 +23,28 @@
                 "mandatory": true
             },
             {
-                "name": "value",
+                "name": "parent",
                 "type": "DATASET_COLUMN",
                 "datasetParamName": "dataset",
-                "label": "Value column",
+                "label": "Parent column",
                 "description": "",
                 "mandatory": true
+            },
+            {
+                "name": "cell_size",
+                "type": "DATASET_COLUMN",
+                "datasetParamName": "dataset",
+                "label": "Size column",
+                "description": "",
+                "mandatory": true
+            },
+            {
+                "name": "color",
+                "type": "DATASET_COLUMN",
+                "datasetParamName": "dataset",
+                "label": "Color column",
+                "description": "",
+                "mandatory": false
             }
         ],
         "canFilter": true,

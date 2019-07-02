@@ -10,7 +10,7 @@ function initTreemap(cfg, onReady) {
         webappMessages.displayFatalError(e.message + ' Go to settings tab.');
         return;
     }
-
+    
     console.warn('CFG ', cfg)
     const dataset = cfg['dataset'];
     const unit = cfg['unit'];
@@ -22,7 +22,7 @@ function initTreemap(cfg, onReady) {
 
     let allRows;
     let old_record = null;
-
+    
     function transform_record(record){
         var row = [];
         row.push(record[unit]);
@@ -62,7 +62,7 @@ function initTreemap(cfg, onReady) {
             //var last_index = allRows.length - 1;
             //var final_row = ["final", "0", "0", allRows[last_index][4], allRows[last_index][4]];
             //allRows.push(final_row);
-
+            
             if (typeof color == 'undefined'){
                 console.warn('3 COLUMNS ONLY !!!')
                 var columnNames = [[unit, parent, cell_size]];

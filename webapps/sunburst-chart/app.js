@@ -289,29 +289,12 @@ function buildHierarchy(csv) {
   return root;
 };
 
-initTreemap( webAppConfig, (data) => {
-    allRows = data;
+let allRows;
+let webAppConfig = dataiku.getWebAppConfig()['webAppConfig'];
+
+initSunburst( webAppConfig, (data) => {
+    allRows = buildHierarchy(data);
     draw();
 });
 
-d3.text("https://gist.githubusercontent.com/kerryrodden/766f8f6d31f645c39f488a0befa1e3c8/raw/9fc86efac379f228749b2de3537acd629c0867c8/visit-sequences.csv", function(text) {
-  var csv = d3.csvParseRows(text);
-  var json = buildHierarchy(csv);
-  createVisualization(json);
-});
 
-
-/*
-window.addEventListener('message', function(event) {
-    if (event.data) {
-        webAppConfig = JSON.parse(event.data)['webAppConfig'];
-        if (!allRows) {
-            return;
-        }
-        initTreemap(webAppConfig, (data) => {
-            allRows = data;
-            draw();
-        });;
-    }
-});
-/*

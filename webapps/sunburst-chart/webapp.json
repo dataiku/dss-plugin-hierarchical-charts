@@ -15,36 +15,20 @@
         "topBar": "STD_FORM",
         "topBarParams": [
             {
-                "name": "unit",
+                "name": "sequence",
                 "type": "DATASET_COLUMN",
                 "datasetParamName": "dataset",
-                "label": "Unit column",
+                "label": "Sequence column",
                 "description": "",
                 "mandatory": true
             },
             {
-                "name": "parent",
+                "name": "value",
                 "type": "DATASET_COLUMN",
                 "datasetParamName": "dataset",
-                "label": "Parent column",
+                "label": "Value column",
                 "description": "",
                 "mandatory": true
-            },
-            {
-                "name": "cell_size",
-                "type": "DATASET_COLUMN",
-                "datasetParamName": "dataset",
-                "label": "Size column",
-                "description": "",
-                "mandatory": true
-            },
-            {
-                "name": "color",
-                "type": "DATASET_COLUMN",
-                "datasetParamName": "dataset",
-                "label": "Color column",
-                "description": "",
-                "mandatory": false
             }
         ],
         "canFilter": true,

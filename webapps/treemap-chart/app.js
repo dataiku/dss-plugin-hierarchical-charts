@@ -3,20 +3,6 @@ let webAppConfig = dataiku.getWebAppConfig()['webAppConfig'];
 
 function draw() {
 
-    console.warn('DRAWING ', allRows);
-
-    /*
-    let data = new google.visualization.DataTable();
-    data.addColumn('string', 'unit');
-    data.addColumn('string', 'parent');
-    data.addColumn('number', 'size');
-    data.addColumn('number', 'color');
-
-    for (var i = 0; i < allRows.length; i++) {
-        arr = allRows[i];
-        data.addRow([arr[0], arr[1], parseFloat(arr[2]), parseFloat(arr[3])]);
-    }*/
-
     let data = new google.visualization.arrayToDataTable(allRows)
     function showFullTooltip(row, size, value) {
         if (data.getNumberOfColumns() == 4){

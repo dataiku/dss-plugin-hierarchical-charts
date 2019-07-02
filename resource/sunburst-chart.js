@@ -11,39 +11,25 @@ function initSunburst(cfg, onReady) {
 
     console.warn('CFG ', cfg)
     const dataset = cfg['dataset'];
-    const sequence = cfg['sequence'];
+    const unit = cfg['unit'];
+    const parent = cfg['parent'];
     const value = cfg['value'];
-    //console.warn('----COLOR: ', color)
     const sampling = {};
-
-    let allRows;
-    let old_record = null;
-
-    function transform_record(record){
-        var row = [];
-        row.push(record[unit]);
-        if (old_record == null){
-            row.push("0");
-            row.push("0");
-        }
-        else {
-            row.push(old_record[value]);
-            row.push(old_record[value]);
-        }
-
-        row.push(record[value]);
-        row.push(record[value]);
-
-        old_record = record;
-        return row;
-    }
 
     function drawAppIfEverythingReady() {
         onReady(allRows);
     }
-
+    
+    function create_dict(r){
+        var dict = {
+          'name': r[unit],
+          'parent': r[parent],
+          'size': parseFloat(r[value])
+        };
+        return dict
+    }
     dataiku.fetch(dataset, sampling, function(dataFrame) {
-        allRows = dataFrame.mapRecords(r => [r[sequence], parseFloat(r[value])]);
+        allRows = dataFrame.mapRecords(create_dict);
         dataReady = true;
         drawAppIfEverythingReady();
     })

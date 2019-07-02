@@ -15,10 +15,18 @@
         "topBar": "STD_FORM",
         "topBarParams": [
             {
-                "name": "sequence",
+                "name": "unit",
                 "type": "DATASET_COLUMN",
                 "datasetParamName": "dataset",
-                "label": "Sequence column",
+                "label": "Unit column",
+                "description": "",
+                "mandatory": true
+            },
+            {
+                "name": "parent",
+                "type": "DATASET_COLUMN",
+                "datasetParamName": "dataset",
+                "label": "Parent column",
                 "description": "",
                 "mandatory": true
             },

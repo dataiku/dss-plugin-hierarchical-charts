@@ -1,108 +1,19 @@
 // Dimensions of sunburst.
-var width = 750;
-var height = 600;
+var width = 650;
+var height = 550;
 var radius = Math.min(width, height) / 2;
 
-function colorTag(tagString) {
-	// were we given a string to work with?  If not, then just return false
-	if (!tagString) {
-		return false;
-	}
-
-	/**
-	 * Return sthe luminosity difference between 2 rgb values
-	 * anything greater than 5 is considered readable
-	 */
-	function luminosityDiff(rgb1, rgb2) {
-  		var l1 = 0.2126 + Math.pow(rgb1.r/255, 2.2) +
-  				 0.7152 * Math.pow(rgb1.g/255, 2.2) +
-  				 0.0722 * Math.pow(rgb1.b/255, 2.2),
-  			l2 = 0.2126 + Math.pow(rgb2.r/255, 2.2) +
-  				 0.7152 * Math.pow(rgb2.g/255, 2.2) +
-  				 0.0722 * Math.pow(rgb2.b/255, 2.2);
-
-  		if (l1 > l2) {
-  			return (l1 + 0.05) / (l2 + 0.05);
-  		} else {
-  			return (l2 + 0.05) / (l1 + 0.05);
-  		}
-	}
-
-	/**
-	 * This is the definition of a color for our purposes.  We've abstracted it out
-	 * so that we can return new color objects when required
-	*/
-	function color(hexCode) {
-		//were we given a hashtag?  remove it.
-		var hexCode = hexCode.replace("#", "");
-		return {
-			/**
-			 * Returns a simple hex string including hashtag
-			 * of the color
-			 */
-			hex: function() {
-				return hexCode;
-			},
-
-			/**
-			 * Returns an RGB breakdown of the color provided
-			 */
-			rgb: function() {
-				var bigint = parseInt(hexCode, 16);
-				return {
-					r: (bigint >> 16) & 255,
-					g: (bigint >> 8) & 255,
-					b: bigint & 255
-				}
-			},
-
-			/**
-			 * Given a list of hex color codes
-			 * Determine which is the most readable
-			 * We use the luminosity equation presented here:
-			 * http://www.splitbrain.org/blog/2008-09/18-calculating_color_contrast_with_php
-			 */
-			readable: function() {
-				// this is meant to be simplistic, if you don't give me more than
-				// one color to work with, you're getting white or black.
-				var comparators = (arguments.length > 1) ? arguments : ["#ffffff", "#000000"],
-					originalRGB = this.rgb(),
-					brightest = { difference: 0 };
-
-
-				for (var i in comparators) {
-					//calculate the difference between the original color and the one we were given
-					var c = color(comparators[i]),
-						l = luminosityDiff(originalRGB, c.rgb());
-
-					// if it's brighter than the current brightest, store it to compare against later ones
-					if (l > brightest.difference) {
-						brightest = {
-							difference: l,
-							color: c
-						}
-					}
-				}
-
-				// return the brighest color
-				return brightest.color;
-			}
-
-		}
-	}
-
-	// create the hex for the random string
+var stringToColour = function(str) {
     var hash = 0;
-    for (var i = 0; i < tagString.length; i++) {
-        hash = tagString.charCodeAt(i) + ((hash << 5) - hash);
+    for (var i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    hex = ""
+    var colour = '#';
     for (var i = 0; i < 3; i++) {
         var value = (hash >> (i * 8)) & 0xFF;
-        hex += ('00' + value.toString(16)).substr(-2);
+        colour += ('00' + value.toString(16)).substr(-2);
     }
-
-    return color(hex);
+    return colour;
 }
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
@@ -110,16 +21,6 @@ var b = {
   w: 75, h: 30, s: 3, t: 10
 };
 
-// Mapping of step names to colors.
-
-var colors = {
-  "Global": "#5687d1",
-  "America": "#7b615c",
-  "Asia": "#de783b",
-  "Africa": "#6ab975",
-  "USA": "#a173d1",
-  "Australia": "#bbbbbb"
-};
 
 // Total size of all segments; we set this later, after loading the data.
 var totalSize = 0;
@@ -171,7 +72,7 @@ function draw() {
       .attr("display", function(d) { return d.depth ? null : "none"; })
       .attr("d", arc)
       .attr("fill-rule", "evenodd")
-      .style("fill", function(d) { return colorTag(d.data.name).hex(); })
+      .style("fill", function(d) { return stringToColour(d.data.name); })
       .style("opacity", 1)
       .on("mouseover", mouseover);
 
@@ -179,6 +80,7 @@ function draw() {
   d3.select("#container").on("mouseleave", mouseleave);
 
   // Get total size of the tree = value of root node from partition.
+  console.warn('PATHHHH ', path.data())
   totalSize = path.datum().value;
  };
 
@@ -191,8 +93,8 @@ function mouseover(d) {
     percentageString = "< 0.1%";
   }
 
-  d3.select("#percentage")
-      .text(percentageString);
+  //d3.select("#percentage")
+  //    .text(percentageString);
 
   d3.select("#explanation")
       .style("visibility", "");
@@ -278,7 +180,7 @@ function updateBreadcrumbs(nodeArray, percentageString) {
 
   entering.append("svg:polygon")
       .attr("points", breadcrumbPoints)
-      .style("fill", function(d) { console.warn('COLOR', d.data.name); return colorTag(d.data.name).hex(); });
+      .style("fill", function(d) { return stringToColour(d.data.name); });
 
   entering.append("svg:text")
       .attr("x", (b.w + b.t) / 2)
@@ -305,6 +207,15 @@ function updateBreadcrumbs(nodeArray, percentageString) {
       .style("visibility", "");
 
 }
+
+var colors = {
+  "Global": "#5687d1",
+  "America": "#7b615c",
+  "Asia": "#de783b",
+  "Africa": "#6ab975",
+  "USA": "#a173d1",
+  "Australia": "#bbbbbb"
+};
 
 function drawLegend() {
 
@@ -353,7 +264,6 @@ function toggleLegend() {
 // root to leaf, separated by hyphens. The second column is a count of how
 // often that sequence occurred.
 function buildHierarchy(csv) {
-  console.warn('BUILD HIERARCHY: ', csv)
   var root = {"name": "root", "children": []};
   for (var i = 0; i < csv.length; i++) {
     var sequence = csv[i][0];
@@ -390,7 +300,6 @@ function buildHierarchy(csv) {
       }
     }
   }
-  console.warn('ROOT: ',root);
   return root;
 };
 
@@ -407,11 +316,9 @@ function initialize(node) {
 
 let allRows;
 let webAppConfig = dataiku.getWebAppConfig()['webAppConfig'];
- 
+
 initSunburst( webAppConfig, (data) => {
-    
-    console.warn('NEW DATA', data);
-    
+        
     // Create root for top-level node(s)
     let root = {"name": "root", "children": []};
     
@@ -429,8 +336,34 @@ initSunburst( webAppConfig, (data) => {
     initialize(root);
     //allRows = buildHierarchy(data);
     allRows = root; 
-    console.warn('AFTER DATA', allRows);
     draw();
+});
+
+window.addEventListener('message', function(event) {
+    if (event.data) {
+        webAppConfig = JSON.parse(event.data)['webAppConfig'];
+        if (!allRows) {
+            return;
+        }
+        initSunburst( webAppConfig, (data) => {
+            // Create root for top-level node(s)
+            let root = {"name": "root", "children": []};
+            data.forEach(node => {
+              // No parentId means top level
+              if (!node.parent) return root.children.push(node);
+              // Insert node as child of parent in data array
+              let parentIndex = data.findIndex(el => el.name === node.parent);
+              if (!data[parentIndex].children) {
+                return data[parentIndex].children = [node];
+              }
+              data[parentIndex].children.push(node);
+            });
+            initialize(root);
+            allRows = root; 
+            console.warn('NEW DATAAAA: ', allRows)
+            draw();
+        });
+    }
 });
 
 

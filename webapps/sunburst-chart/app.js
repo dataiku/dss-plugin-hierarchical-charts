@@ -80,7 +80,7 @@ function draw() {
   d3.select("#container").on("mouseleave", mouseleave);
 
   // Get total size of the tree = value of root node from partition.
-  console.warn('PATHHHH ', path.data())
+  console.warn('PATHHHH ', path.datum().value)
   totalSize = path.datum().value;
  };
 
@@ -92,7 +92,6 @@ function mouseover(d) {
   if (percentage < 0.1) {
     percentageString = "< 0.1%";
   }
-
   //d3.select("#percentage")
   //    .text(percentageString);
 
@@ -321,7 +320,6 @@ initSunburst( webAppConfig, (data) => {
         
     // Create root for top-level node(s)
     let root = {"name": "root", "children": []};
-    
     data.forEach(node => {
       // No parentId means top level
       if (!node.parent) return root.children.push(node);
@@ -333,7 +331,8 @@ initSunburst( webAppConfig, (data) => {
       }
       data[parentIndex].children.push(node);
     });
-    initialize(root);
+    //initialize(root);
+    console.warn('INIT SUNBURST, ', JSON.stringify(root));
     //allRows = buildHierarchy(data);
     allRows = root; 
     draw();
@@ -358,7 +357,7 @@ window.addEventListener('message', function(event) {
               }
               data[parentIndex].children.push(node);
             });
-            initialize(root);
+            //initialize(root);
             allRows = root; 
             console.warn('NEW DATAAAA: ', allRows)
             draw();

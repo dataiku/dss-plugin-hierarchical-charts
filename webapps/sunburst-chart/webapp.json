@@ -6,14 +6,15 @@
     },
 
     "baseType": "STANDARD",
-    "hasBackend": "false",
-
+    "hasBackend": "true",
+    "standardWebAppLibraries" : ["jquery", "dataiku", "bootstrap", "font_awesome"],
+    
     "chart" : {
         "datasetParamName": "dataset",
         "leftBarLabel": "Chart parameters",
-        "leftBarParams": [],
+        "topBarParams": [],
         "topBar": "STD_FORM",
-        "topBarParams": [
+        "leftBarParams": [
             {
                 "name": "unit",
                 "type": "DATASET_COLUMN",
@@ -39,7 +40,7 @@
                 "mandatory": true
             }
         ],
-        "canFilter": true,
-        "canFacet": true
+        "canFilter": false,
+        "canFacet": false
     }
 }

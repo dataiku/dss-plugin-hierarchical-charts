@@ -1,6 +1,6 @@
 // Dimensions of sunburst.
-var width = 650;
-var height = 550;
+var width = 500;
+var height = 500;
 var radius = Math.min(width, height) / 2;
 
 var stringToColour = function(str) {
@@ -80,7 +80,6 @@ function draw() {
   d3.select("#container").on("mouseleave", mouseleave);
 
   // Get total size of the tree = value of root node from partition.
-  console.warn('PATHHHH ', path.datum().value)
   totalSize = path.datum().value;
  };
 
@@ -262,7 +261,7 @@ function toggleLegend() {
 // for a partition layout. The first column is a sequence of step names, from
 // root to leaf, separated by hyphens. The second column is a count of how
 // often that sequence occurred.
-function buildHierarchy(csv) {
+function buildHierarchy(csv) { // should this take into account "multiple trees" ?
   var root = {"name": "root", "children": []};
   for (var i = 0; i < csv.length; i++) {
     var sequence = csv[i][0];
@@ -313,11 +312,31 @@ function initialize(node) {
     return node.size;
 }
 
+
 let allRows;
 let webAppConfig = dataiku.getWebAppConfig()['webAppConfig'];
 
+let dataReady;
+let chartReady;
+
+let dataset_name = webAppConfig['dataset'];
+let unit_column = webAppConfig['unit'];
+let parent_column = webAppConfig['parent'];
+let size_column = webAppConfig['value'];
+
+$.getJSON(getWebAppBackendUrl('reformat_data'), {'dataset_name': dataset_name, 'unit_column': unit_column, 'parent_column': parent_column, 'size_column': size_column})
+    .done(
+        function(data){
+            allRows = data['children'];
+            console.warn(allRows);
+            draw()
+        }
+    );
+
+/*
 initSunburst( webAppConfig, (data) => {
         
+    //console.warn('RAW DATA: ', data)
     // Create root for top-level node(s)
     let root = {"name": "root", "children": []};
     data.forEach(node => {
@@ -330,6 +349,7 @@ initSunburst( webAppConfig, (data) => {
         return data[parentIndex].children = [node];
       }
       data[parentIndex].children.push(node);
+      console.warn('CHILDREN: ', data[parentIndex])
     });
     //initialize(root);
     console.warn('INIT SUNBURST, ', JSON.stringify(root));
@@ -365,4 +385,4 @@ window.addEventListener('message', function(event) {
     }
 });
 
-
+*/

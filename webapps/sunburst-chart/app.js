@@ -1,8 +1,15 @@
 // Dimensions of sunburst.
 var width = 500;
+var sequence_width = 1000;
 var height = 500;
 var radius = Math.min(width, height) / 2;
 
+
+var stringToColour = d3.scaleOrdinal(d3.schemeCategory20c);
+
+
+/*
+// similar strings generate similar color -> be aware
 var stringToColour = function(str) {
     var hash = 0;
     for (var i = 0; i < str.length; i++) {
@@ -13,12 +20,13 @@ var stringToColour = function(str) {
         var value = (hash >> (i * 8)) & 0xFF;
         colour += ('00' + value.toString(16)).substr(-2);
     }
+    console.warn(colour);
     return colour;
-}
+}*/
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
 var b = {
-  w: 75, h: 30, s: 3, t: 10
+  w: 150, h: 30, s: 3, t: 10
 };
 
 
@@ -42,10 +50,12 @@ var arc = d3.arc()
     .outerRadius(function(d) { return Math.sqrt(d.y1); });
 
 // Main function to draw and set up the visualization, once we have the data.
-function draw() {
+function draw(first=true) {
 
   // Basic setup of page elements.
-  initializeBreadcrumbTrail();
+  if (first == true) {
+      initializeBreadcrumbTrail();
+  }
   drawLegend();
   d3.select("#togglelegend").on("click", toggleLegend);
 
@@ -63,10 +73,13 @@ function draw() {
   // For efficiency, filter nodes to keep only those large enough to see.
   var nodes = partition(root).descendants()
       .filter(function(d) {
-          return (d.x1 - d.x0 > 0.005); // 0.005 radians = 0.29 degrees
+          return (d.x1 - d.x0 > 0.000); // 0.005 radians = 0.29 degrees
       });
+  //console.warn('VIS in DRAW: ', nodes);
+  //console.warn('BEFORE: ', nodes)
 
-  var path = vis.data([allRows]).selectAll("path")
+  // path is empty when reloading, wtf ?
+  var path = vis.selectAll("path") //.data([allRows])
       .data(nodes)
       .enter().append("svg:path")
       .attr("display", function(d) { return d.depth ? null : "none"; })
@@ -74,17 +87,29 @@ function draw() {
       .attr("fill-rule", "evenodd")
       .style("fill", function(d) { return stringToColour(d.data.name); })
       .style("opacity", 1)
-      .on("mouseover", mouseover);
+      .on("mouseover", null)
+      .on("mouseover", mouseover);// wtf why this does not work when reload
+
+  
+    
+  //console.warn('AFTER: ', root)
 
   // Add the mouseleave handler to the bounding circle.
   d3.select("#container").on("mouseleave", mouseleave);
 
   // Get total size of the tree = value of root node from partition.
-  totalSize = path.datum().value;
+  totalSize = root.value//100; //path.datum().value;
  };
+
+//Stash the old values for transition.
+function stash(d) {
+    d.x0 = d.x;
+    d.dx0 = d.dx;
+    }
 
 // Fade all but the current sequence, and show it in the breadcrumb trail.
 function mouseover(d) {
+  //console.warn('MOUSE OVER')
 
   var percentage = (100 * d.value / totalSize).toPrecision(3);
   var percentageString = percentage + "%";
@@ -100,7 +125,6 @@ function mouseover(d) {
   var sequenceArray = d.ancestors().reverse();
   sequenceArray.shift(); // remove root node from the array
   updateBreadcrumbs(sequenceArray, percentageString);
-
   // Fade all the segments.
   d3.selectAll("path")
       .style("opacity", 0.3);
@@ -126,11 +150,12 @@ function mouseleave(d) {
   // Transition each segment to full opacity and then reactivate it.
   d3.selectAll("path")
       .transition()
-      .duration(1000)
+      .duration(100)
       .style("opacity", 1)
       .on("end", function() {
-              d3.select(this).on("mouseover", mouseover);
-            });
+              d3.select(this).on("mouseover", null).on("mouseover", mouseover);
+            })
+    ;
 
   d3.select("#explanation")
       .style("visibility", "hidden");
@@ -139,7 +164,7 @@ function mouseleave(d) {
 function initializeBreadcrumbTrail() {
   // Add the svg area.
   var trail = d3.select("#sequence").append("svg:svg")
-      .attr("width", width)
+      .attr("width", sequence_width)
       .attr("height", 50)
       .attr("id", "trail");
   // Add the label at the end, for the percentage.
@@ -257,68 +282,13 @@ function toggleLegend() {
   }
 }
 
-// Take a 2-column CSV and transform it into a hierarchical structure suitable
-// for a partition layout. The first column is a sequence of step names, from
-// root to leaf, separated by hyphens. The second column is a count of how
-// often that sequence occurred.
-function buildHierarchy(csv) { // should this take into account "multiple trees" ?
-  var root = {"name": "root", "children": []};
-  for (var i = 0; i < csv.length; i++) {
-    var sequence = csv[i][0];
-    var size = +csv[i][1];
-    if (isNaN(size)) { // e.g. if this is a header row
-      continue;
-    }
-    var parts = sequence.split("-");
-    var currentNode = root;
-    for (var j = 0; j < parts.length; j++) {
-      var children = currentNode["children"];
-      var nodeName = parts[j];
-      var childNode;
-      if (j + 1 < parts.length) {
-   // Not yet at the end of the sequence; move down the tree.
-  var foundChild = false;
-  for (var k = 0; k < children.length; k++) {
-    if (children[k]["name"] == nodeName) {
-      childNode = children[k];
-      foundChild = true;
-      break;
-    }
-  }
-  // If we don't already have a child node for this branch, create it.
-  if (!foundChild) {
-    childNode = {"name": nodeName, "children": []};
-    children.push(childNode);
-  }
-  currentNode = childNode;
-      } else {
-  // Reached the end of the sequence; create a leaf node.
-  childNode = {"name": nodeName, "size": size};
-  children.push(childNode);
-      }
-    }
-  }
-  return root;
-};
 
-function initialize(node) {
-    // internal nodes get their total from children
-    if (node.children) {
-        //node.value = 0;
-        for (var i = 0; i < node.children.length; i++) {
-            node.size += initialize(node.children[i]);
-        }
-    }
-    return node.size;
-}
 
 
 let allRows;
-let webAppConfig = dataiku.getWebAppConfig()['webAppConfig'];
-
 let dataReady;
 let chartReady;
-
+let webAppConfig = dataiku.getWebAppConfig()['webAppConfig'];
 let dataset_name = webAppConfig['dataset'];
 let unit_column = webAppConfig['unit'];
 let parent_column = webAppConfig['parent'];
@@ -328,61 +298,29 @@ $.getJSON(getWebAppBackendUrl('reformat_data'), {'dataset_name': dataset_name, '
     .done(
         function(data){
             allRows = data['children'];
-            console.warn(allRows);
             draw()
         }
     );
 
-/*
-initSunburst( webAppConfig, (data) => {
-        
-    //console.warn('RAW DATA: ', data)
-    // Create root for top-level node(s)
-    let root = {"name": "root", "children": []};
-    data.forEach(node => {
-      // No parentId means top level
-      if (!node.parent) return root.children.push(node);
 
-      // Insert node as child of parent in data array
-      let parentIndex = data.findIndex(el => el.name === node.parent);
-      if (!data[parentIndex].children) {
-        return data[parentIndex].children = [node];
-      }
-      data[parentIndex].children.push(node);
-      console.warn('CHILDREN: ', data[parentIndex])
-    });
-    //initialize(root);
-    console.warn('INIT SUNBURST, ', JSON.stringify(root));
-    //allRows = buildHierarchy(data);
-    allRows = root; 
-    draw();
-});
-
+var counter;
+counter = 1;
 window.addEventListener('message', function(event) {
-    if (event.data) {
+    if (event.data && counter%2==1) {
         webAppConfig = JSON.parse(event.data)['webAppConfig'];
-        if (!allRows) {
-            return;
-        }
-        initSunburst( webAppConfig, (data) => {
-            // Create root for top-level node(s)
-            let root = {"name": "root", "children": []};
-            data.forEach(node => {
-              // No parentId means top level
-              if (!node.parent) return root.children.push(node);
-              // Insert node as child of parent in data array
-              let parentIndex = data.findIndex(el => el.name === node.parent);
-              if (!data[parentIndex].children) {
-                return data[parentIndex].children = [node];
-              }
-              data[parentIndex].children.push(node);
-            });
-            //initialize(root);
-            allRows = root; 
-            console.warn('NEW DATAAAA: ', allRows)
-            draw();
-        });
-    }
-});
+        vis.selectAll("*").remove();
 
-*/
+        let dataset_name = webAppConfig['dataset'];
+        let unit_column = webAppConfig['unit'];
+        let parent_column = webAppConfig['parent'];
+        let size_column = webAppConfig['value'];
+        $.getJSON(getWebAppBackendUrl('reformat_data'), {'dataset_name': dataset_name, 'unit_column': unit_column, 'parent_column': parent_column, 'size_column': size_column})
+            .done(
+                function(data){
+                    allRows = data['children'];
+                    draw(first=false); 
+                }
+            );
+    };
+    counter = counter + 1; 
+});

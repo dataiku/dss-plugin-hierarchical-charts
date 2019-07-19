@@ -50,6 +50,7 @@ def reformat_data():
     size_column = request.args.get('size_column')
     df = dataiku.Dataset(dataset_name).get_dataframe(columns=[unit_column, parent_column, size_column])        
     dfx = build_complete_df(df, unit_column, parent_column, size_column)
+    print(dfx)
     tree = generate_tree_structure(dfx, unit_column, parent_column, size_column)
     return json.dumps(tree)
 

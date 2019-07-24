@@ -1,11 +1,11 @@
 // Dimensions of sunburst.
-var width = 550;
-var height = 550;
+var width = 350;
+var height = 350;
 var radius = Math.min(width, height) / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
 var b = {
-    w: 600, h: 30, s: 3, t: 10
+    w: 400, h: 30, s: 3, t: 10
 };
 
 // make `colors` an ordinal scale
@@ -14,12 +14,25 @@ var colors = d3.scale.category20();
 // Total size of all segments; we set this later, after loading the data.
 var totalSize = 0; 
 
-var vis = d3.select("#chart").append("svg:svg")
+/*
+var vis = d3.select("#chart")
+    .classed("svg-container", true)
+    .append("svg:svg")
+    //responsive SVG needs these 2 attributes and no width and height attr
+   .attr("preserveAspectRatio", "xMinYMin meet")
+   .attr("viewBox", "0 0 600 400")
+   //class to make it responsive
+   .classed("svg-content-responsive", true);
+*/
+
+var vis = d3.select("#chart")
+    .append("svg:svg")
     .attr("width", width)
     .attr("height", height)
     .append("svg:g")
     .attr("id", "container")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
 
 var partition = d3.layout.partition()
     .size([2 * Math.PI, 100])
@@ -203,7 +216,22 @@ function updateBreadcrumbs(nodeArray, percentageString) {
       .attr("y", b.h / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", "middle")
-      .text(function(d) { return d.name; });
+      .text(function(d) { return d.name; })
+      .style("font-size", function(d){
+        var newLength = d.name.length;
+        var charsPerLine = 50;
+        if (newLength < charsPerLine){
+            return "15px";
+        }
+        else {
+            var newEmSize = charsPerLine / newLength;
+            var textBaseSize = 15;    
+            var newFontSize = (2 - newEmSize)*newEmSize * textBaseSize;
+            console.warn("TEXT ", d.name) 
+            console.warn("SIZE ", newEmSize);
+            return newFontSize + "px";
+        }
+    });
 
   // Set position for entering and updating nodes.
   g.attr("transform", function(d, i) {

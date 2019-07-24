@@ -80,7 +80,8 @@ if (!window.google) {
 window.addEventListener('message', function(event) {
     if (event.data) {
         webAppConfig = JSON.parse(event.data)['webAppConfig'];
-        
+        console.warn('EVENT START', webAppConfig); 
+
         let dataset_name = webAppConfig['dataset'];
         let unit_column = webAppConfig['unit'];
         let parent_column = webAppConfig['parent'];

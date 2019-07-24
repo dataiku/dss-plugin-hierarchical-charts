@@ -1,21 +1,15 @@
 @import '/plugins/dss-plugin-hierarchical-charts/resource/style.css';
 
 
-
 #main {
-  float: left;
-  width: 550px;
-}
-
-#sidebar {
   float: right;
-  width: 100px;
+  width: 350px;
 }
 
 #leftsidebar {
   float: left;
-  width: 600px;
-  height: 600px;
+  width: 400px;
+  height: 300px;
 }
 
 #sequence {

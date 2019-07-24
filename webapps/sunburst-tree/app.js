@@ -7,7 +7,7 @@ var radius = Math.min(width, height) / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
 var b = {
-    w: 300, h: 30, s: 3, t: 10
+    w: 590, h: 30, s: 3, t: 10
 };
 
 // make `colors` an ordinal scale
@@ -187,6 +187,7 @@ function breadcrumbPoints(d, i) {
   return points.join(" ");
 }
 
+
 // Update the breadcrumb trail to show the current sequence and percentage.
 function updateBreadcrumbs(nodeArray, percentageString) {
 
@@ -207,7 +208,23 @@ function updateBreadcrumbs(nodeArray, percentageString) {
       .attr("y", b.h / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", "middle")
-      .text(function(d) { return d.name; });
+      .text(function(d) { return d.name; })
+      .style("font-size", function(d){
+        var newLength = d.name.length;
+        var charsPerLine = 50;
+        if (newLength < charsPerLine){
+            return "15px";
+        }
+        else {
+            var newEmSize = charsPerLine / newLength;
+            var textBaseSize = 15;    
+            var newFontSize = (2 - newEmSize)*newEmSize * textBaseSize;
+            console.warn("TEXT ", d.name) 
+            console.warn("SIZE ", newEmSize);
+            return newFontSize + "px";
+        }
+    });
+
 
   // Set position for entering and updating nodes.
   g.attr("transform", function(d, i) {

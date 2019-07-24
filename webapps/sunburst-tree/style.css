@@ -1,0 +1,51 @@
+@import '/plugins/dss-plugin-hierarchical-charts/resource/style.css';
+
+
+#main {
+  float: left;
+  width: 300px;
+}
+
+#sidebar {
+  float: right;
+  width: 100px;
+}
+
+#leftsidebar {
+  float: left;
+  width: 300px;
+  height: 300px;
+}
+
+#sequence {
+  width: 500px;
+  height: 70px;
+}
+
+
+#sequence text, #legend text {
+  font-weight: 600;
+  fill: #fff;
+}
+
+#chart {
+  position: relative;
+}
+
+#chart path {
+  stroke: #fff;
+}
+
+#explanation {
+  position: absolute;
+  top: 235px;
+  left: 205px;
+  width: 140px;
+  text-align: right;
+  color: #666;
+  z-index: -1;
+}
+
+#percentage {
+  font-size: 2.5em;
+}

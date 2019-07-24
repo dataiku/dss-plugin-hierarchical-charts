@@ -13,7 +13,9 @@ def generate_rule(node):
             middle = ' is '
         if len(node.get('values', '')) > 1:
             middle += "one of "
-        return node.get('feature', '') + middle + ', '.join(node.get('values', ''))
+            
+        val_list = [str(x) for x in node.get('values', [])]
+        return "{}{}{}".format(node.get('feature', ''), middle, ', '.join(val_list))
     else:
         if node.get('beginning'):
             begin = '{} <= '.format(node.get('beginning'))
@@ -87,35 +89,24 @@ def parse_json():
 
     df_dict = {'child_rule':[], 'parent_rule':[], 'num_observations':[]}
     for node_index, node in rule_dict.items():
-        df_dict['child_rule'].append(node.get('rule'))
         parent_id = str(node.get('parent_id'))
         if parent_id != '-1':
-            df_dict['parent_rule'].append(rule_dict[str(node.get('parent_id'))].get('rule'))
+            try:
+                df_dict['parent_rule'].append(rule_dict[str(node.get('parent_id'))].get('rule'))
+            except:
+                continue
         else:
             df_dict['parent_rule'].append(None)
+        
+        df_dict['child_rule'].append(node.get('rule'))
         df_dict['num_observations'].append(node.get('samples')[0])
 
     tree_rules_df = pd.DataFrame(df_dict) # Compute a Pandas dataframe to write into tree_rules
-    unit_column = 'child_rule' #request.args.get('unit_column')
-    parent_column = 'parent_rule' #request.args.get('parent_column')
-    size_column = 'num_observations' #request.args.get('size_column')
+    unit_column = 'child_rule' 
+    parent_column = 'parent_rule'
+    size_column = 'num_observations'
     dfx = build_complete_df(tree_rules_df, unit_column, parent_column, size_column)
     tree = generate_tree_structure(dfx, unit_column, parent_column, size_column)
     return json.dumps(tree)
-
-''' 
-@app.route('/reformat_data')
-def reformat_data():
-    dataset_name = "toto"#request.args.get('dataset_name')
-    unit_column = 'child_rule' #request.args.get('unit_column')
-    parent_column = 'parent_rule' #request.args.get('parent_column')
-    size_column = 'num_observations' #request.args.get('size_column')
-    df_dict = request.args.get('df_dict')
-    print('----- erkeNRKENRKENR ------', df_dict)
-    df = dataiku.Dataset(dataset_name).get_dataframe(columns=[unit_column, parent_column, size_column])        
-    dfx = build_complete_df(df, unit_column, parent_column, size_column)
-    tree = generate_tree_structure(dfx, unit_column, parent_column, size_column)
-    return json.dumps(tree)
-''' 
 
 

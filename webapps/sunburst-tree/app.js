@@ -7,7 +7,7 @@ var radius = Math.min(width, height) / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
 var b = {
-    w: 590, h: 30, s: 3, t: 10
+    w: 590, h: 20, s: 3, t: 10
 };
 
 // make `colors` an ordinal scale
@@ -217,7 +217,7 @@ function updateBreadcrumbs(nodeArray, percentageString) {
         }
         else {
             var newEmSize = charsPerLine / newLength;
-            var textBaseSize = 15;    
+            var textBaseSize = 13;    
             var newFontSize = (2 - newEmSize)*newEmSize * textBaseSize;
             console.warn("TEXT ", d.name) 
             console.warn("SIZE ", newEmSize);

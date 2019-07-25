@@ -15,7 +15,7 @@ def generate_rule(node):
             middle += "one of "
             
         val_list = [str(x) for x in node.get('values', [])]
-        return "{}{}{}".format(node.get('feature', ''), middle, ', '.join(val_list))
+        return "{0}{1}{2}".format(node.get('feature', ''), middle, ', '.join(val_list))
     else:
         if node.get('beginning'):
             begin = '{} <= '.format(node.get('beginning'))
@@ -33,7 +33,6 @@ def generate_rule(node):
             return '{0}{1}{2}'.format(begin, node.get('feature'), end)
 
 def build_complete_df(df, unit_column, parent_column, size_column, color_column=None):
-    
     df_copy = df.dropna(how='any').copy()
     unit_set = set(df_copy[unit_column])
     parent_set = set(df_copy[parent_column])

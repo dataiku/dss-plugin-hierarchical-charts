@@ -1,5 +1,3 @@
-console.warn("START: ", dataiku.getWebAppConfig());
-
 // Dimensions of sunburst.
 var width = 300;
 var height = 300;
@@ -43,8 +41,6 @@ function draw(first=true) {
     if (first == true) {
           initializeBreadcrumbTrail();
     }  
-    d3.select("#togglelegend").on("click", toggleLegend);
-
     // Bounding circle underneath the sunburst, to make it easier to detect
     // when the mouse leaves the parent g.
     vis.append("svg:circle")
@@ -69,9 +65,6 @@ function draw(first=true) {
     
     // set domain of colors scale based on data
     colors.domain(uniqueNames);
-  
-    // make sure this is done after setting the domain
-    drawLegend();
         
     var path = vis.data([allRows]).selectAll("path")
         .data(nodes)
@@ -102,9 +95,6 @@ function mouseover(d) {
 
   d3.select("#percentage")
       .text(percentageString);
-
-  d3.select("#explanation")
-      .style("visibility", "");
 
   var sequenceArray = getAncestors(d);
     
@@ -209,7 +199,7 @@ function updateBreadcrumbs(nodeArray, percentageString) {
       .attr("dy", "0.35em")
       .attr("text-anchor", "middle")
       .text(function(d) { return d.name; })
-      .style("font-size", function(d){
+      .style("font-size", function(d){ // scale the font size according to text length
         var newLength = d.name.length;
         var charsPerLine = 50;
         if (newLength < charsPerLine){
@@ -219,8 +209,6 @@ function updateBreadcrumbs(nodeArray, percentageString) {
             var newEmSize = charsPerLine / newLength;
             var textBaseSize = 13;    
             var newFontSize = (2 - newEmSize)*newEmSize * textBaseSize;
-            console.warn("TEXT ", d.name) 
-            console.warn("SIZE ", newEmSize);
             return newFontSize + "px";
         }
     });
@@ -248,85 +236,15 @@ function updateBreadcrumbs(nodeArray, percentageString) {
 
 }
 
-function drawLegend() {
-
-  // Dimensions of legend item: width, height, spacing, radius of rounded rect.
-  var li = {
-    w: 75, h: 30, s: 3, r: 3
-  };
-
-  var legend = d3.select("#legend").append("svg:svg")
-      .attr("width", li.w)
-      .attr("height", colors.domain().length * (li.h + li.s));
-
-  var g = legend.selectAll("g")
-      .data(colors.domain())
-      .enter().append("svg:g")
-      .attr("transform", function(d, i) {
-              return "translate(0," + i * (li.h + li.s) + ")";
-           });
-
-  g.append("svg:rect")
-      .attr("rx", li.r)
-      .attr("ry", li.r)
-      .attr("width", li.w)
-      .attr("height", li.h)
-      .style("fill", function(d) { return colors(d); });
-
-  g.append("svg:text")
-      .attr("x", li.w / 2)
-      .attr("y", li.h / 2)
-      .attr("dy", "0.35em")
-      .attr("text-anchor", "middle")
-      .text(function(d) { return d; });
-}
-
-function toggleLegend() {
-  var legend = d3.select("#legend");
-  if (legend.style("visibility") == "hidden") {
-    legend.style("visibility", "");
-  } else {
-    legend.style("visibility", "hidden");
-  }
-}
-
-
-
 let allRows;
-let dataReady;
-let chartReady;
-let webAppConfig = dataiku.getWebAppConfig(); //['webAppConfig'];
-
+let webAppConfig = dataiku.getWebAppConfig();
 let folder_name = webAppConfig['folder'];
 let path_to_the_file = webAppConfig['pathToTheFile'];
 
 $.getJSON(getWebAppBackendUrl('parse_json'), {'folder_name': folder_name, 'path_to_the_file':path_to_the_file})
     .done(
         function(data){
-            console.warn('PARSED JSON: ', data); 
             allRows = data['children'];
             draw()
-                    }
-        ); 
-
-var counter;
-counter = 1;
-window.addEventListener('message', function(event) {
-    if (event.data && counter%2==1) {
-        webAppConfig = JSON.parse(event.data)['webAppConfig'];
-        vis.selectAll("*").remove();
-
-        let dataset_name = webAppConfig['dataset'];
-        let unit_column = webAppConfig['unit'];
-        let parent_column = webAppConfig['parent'];
-        let size_column = webAppConfig['value'];
-        $.getJSON(getWebAppBackendUrl('reformat_data'), {'dataset_name': dataset_name, 'unit_column': unit_column, 'parent_column': parent_column, 'size_column': size_column})
-            .done(
-                function(data){
-                    allRows = data['children'];
-                    draw(first=false); 
-                }
-            );
-    };
-    counter = counter + 1; 
-});
+            }
+    ); 

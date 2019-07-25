@@ -12,18 +12,7 @@ var b = {
 var colors = d3.scale.category20();
 
 // Total size of all segments; we set this later, after loading the data.
-var totalSize = 0; 
-
-/*
-var vis = d3.select("#chart")
-    .classed("svg-container", true)
-    .append("svg:svg")
-    //responsive SVG needs these 2 attributes and no width and height attr
-   .attr("preserveAspectRatio", "xMinYMin meet")
-   .attr("viewBox", "0 0 600 400")
-   //class to make it responsive
-   .classed("svg-content-responsive", true);
-*/
+var totalSize = 0;
 
 var vis = d3.select("#chart")
     .append("svg:svg")
@@ -52,8 +41,7 @@ function draw(first=true) {
     if (first == true) {
           initializeBreadcrumbTrail();
     }  
-    d3.select("#togglelegend").on("click", toggleLegend);
-
+    
     // Bounding circle underneath the sunburst, to make it easier to detect
     // when the mouse leaves the parent g.
     vis.append("svg:circle")
@@ -78,9 +66,6 @@ function draw(first=true) {
     
     // set domain of colors scale based on data
     colors.domain(uniqueNames);
-  
-    // make sure this is done after setting the domain
-    drawLegend();
         
     var path = vis.data([allRows]).selectAll("path")
         .data(nodes)
@@ -111,12 +96,10 @@ function mouseover(d) {
 
   d3.select("#percentage")
       .text(percentageString);
-
   d3.select("#explanation")
       .style("visibility", "");
 
   var sequenceArray = getAncestors(d);
-    
   updateBreadcrumbs(sequenceArray, percentageString);
 
   // Fade all the segments.
@@ -217,7 +200,7 @@ function updateBreadcrumbs(nodeArray, percentageString) {
       .attr("dy", "0.35em")
       .attr("text-anchor", "middle")
       .text(function(d) { return d.name; })
-      .style("font-size", function(d){
+      .style("font-size", function(d){ // scale the font size according to text length
         var newLength = d.name.length;
         var charsPerLine = 50;
         if (newLength < charsPerLine){
@@ -227,8 +210,6 @@ function updateBreadcrumbs(nodeArray, percentageString) {
             var newEmSize = charsPerLine / newLength;
             var textBaseSize = 15;    
             var newFontSize = (2 - newEmSize)*newEmSize * textBaseSize;
-            console.warn("TEXT ", d.name) 
-            console.warn("SIZE ", newEmSize);
             return newFontSize + "px";
         }
     });
@@ -255,53 +236,8 @@ function updateBreadcrumbs(nodeArray, percentageString) {
 
 }
 
-function drawLegend() {
-
-  // Dimensions of legend item: width, height, spacing, radius of rounded rect.
-  var li = {
-    w: 75, h: 30, s: 3, r: 3
-  };
-
-  var legend = d3.select("#legend").append("svg:svg")
-      .attr("width", li.w)
-      .attr("height", colors.domain().length * (li.h + li.s));
-
-  var g = legend.selectAll("g")
-      .data(colors.domain())
-      .enter().append("svg:g")
-      .attr("transform", function(d, i) {
-              return "translate(0," + i * (li.h + li.s) + ")";
-           });
-
-  g.append("svg:rect")
-      .attr("rx", li.r)
-      .attr("ry", li.r)
-      .attr("width", li.w)
-      .attr("height", li.h)
-      .style("fill", function(d) { return colors(d); });
-
-  g.append("svg:text")
-      .attr("x", li.w / 2)
-      .attr("y", li.h / 2)
-      .attr("dy", "0.35em")
-      .attr("text-anchor", "middle")
-      .text(function(d) { return d; });
-}
-
-function toggleLegend() {
-  var legend = d3.select("#legend");
-  if (legend.style("visibility") == "hidden") {
-    legend.style("visibility", "");
-  } else {
-    legend.style("visibility", "hidden");
-  }
-}
-
-
 
 let allRows;
-let dataReady;
-let chartReady;
 let webAppConfig = dataiku.getWebAppConfig()['webAppConfig'];
 let dataset_name = webAppConfig['dataset'];
 let unit_column = webAppConfig['unit'];
@@ -316,10 +252,10 @@ $.getJSON(getWebAppBackendUrl('reformat_data'), {'dataset_name': dataset_name, '
         }
     );
 
-
 var counter;
 counter = 1;
 window.addEventListener('message', function(event) {
+    // counter is a quick fix for the duplicate event message problem
     if (event.data && counter%2==1) {
         webAppConfig = JSON.parse(event.data)['webAppConfig'];
         vis.selectAll("*").remove();

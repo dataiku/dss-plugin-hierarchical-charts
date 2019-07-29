@@ -1,8 +1,8 @@
 {
     "meta": {
-        "label": "Sunburst chart",
-        "description": "",
-        "icon": "icon-bar-chart"
+        "label": "Sunburst",
+        "description": "Visualize hierarchies as concentric circles",
+        "icon": "icon-sun"
     },
 
     "baseType": "STANDARD",

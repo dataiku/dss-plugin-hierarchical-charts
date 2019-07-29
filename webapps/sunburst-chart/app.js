@@ -1,20 +1,20 @@
 // Dimensions of sunburst.
-var width = 350;
-var height = 350;
-var radius = Math.min(width, height) / 2;
+let width = 350;
+let height = 350;
+let radius = Math.min(width, height) / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
-var b = {
+let b = {
     w: 400, h: 30, s: 3, t: 10
 };
 
 // make `colors` an ordinal scale
-var colors = d3.scale.category20();
+let colors = d3.scale.category20();
 
 // Total size of all segments; we set this later, after loading the data.
-var totalSize = 0;
+let totalSize = 0;
 
-var vis = d3.select("#chart")
+let vis = d3.select("#chart")
     .append("svg:svg")
     .attr("width", width)
     .attr("height", height)
@@ -23,11 +23,11 @@ var vis = d3.select("#chart")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
 
-var partition = d3.layout.partition()
+let partition = d3.layout.partition()
     .size([2 * Math.PI, 100])
     .value(function(d) { return d.size; });
 
-var arc = d3.svg.arc()
+let arc = d3.svg.arc()
     .startAngle(function(d) { return d.x; })
     .endAngle(function(d) { return d.x + d.dx; })
     .innerRadius(function(d) { return radius * Math.sqrt(d.y) / 10; })
@@ -49,25 +49,12 @@ function draw(first=true) {
         .style("opacity", 0);
 
     // For efficiency, filter nodes to keep only those large enough to see.
-    var nodes = partition.nodes(allRows)
+    let nodes = partition.nodes(allRows)
         .filter(function(d) {
             return (d.dx > 0.005); // 0.005 radians = 0.29 degrees
         });
     
-    var uniqueNames = (function(a) {
-        var output = [];
-        a.forEach(function(d) {
-            if (output.indexOf(d.name) === -1) {
-                output.push(d.name);
-            }
-        });
-        return output;
-    })(nodes);
-    
-    // set domain of colors scale based on data
-    colors.domain(uniqueNames);
-        
-    var path = vis.data([allRows]).selectAll("path")
+    let path = vis.data([allRows]).selectAll("path")
         .data(nodes)
        .enter()
         .append("svg:path")
@@ -88,8 +75,8 @@ function draw(first=true) {
 // Fade all but the current sequence, and show it in the breadcrumb trail.
 function mouseover(d) {
 
-  var percentage = (100 * d.value / totalSize).toPrecision(3);
-  var percentageString = percentage + "%";
+  let percentage = (100 * d.value / totalSize).toPrecision(3);
+  let percentageString = percentage + "%";
   if (percentage < 0.1) {
     percentageString = "< 0.1%";
   }
@@ -99,7 +86,7 @@ function mouseover(d) {
   d3.select("#explanation")
       .style("visibility", "");
 
-  var sequenceArray = getAncestors(d);
+  let sequenceArray = getAncestors(d);
   updateBreadcrumbs(sequenceArray, percentageString);
 
   // Fade all the segments.
@@ -153,7 +140,7 @@ function getAncestors(node) {
 
 function initializeBreadcrumbTrail() {
   // Add the svg area.
-  var trail = d3.select("#leftsidebar").append("svg:svg")
+  let trail = d3.select("#leftsidebar").append("svg:svg")
       .attr("width", 600)
       .attr("height", height)
       .attr("id", "trail");
@@ -166,7 +153,7 @@ function initializeBreadcrumbTrail() {
 
 // Generate a string that describes the points of a breadcrumb polygon.
 function breadcrumbPoints(d, i) {
-  var points = [];
+  let points = [];
   points.push("0,0");
   points.push(b.w + ",0");
   points.push(b.w + b.t + "," + (b.h / 2));
@@ -183,12 +170,12 @@ function breadcrumbPoints(d, i) {
 function updateBreadcrumbs(nodeArray, percentageString) {
 
   // Data join; key function combines name and depth (= position in sequence).
-  var g = d3.select("#trail")
+  let g = d3.select("#trail")
       .selectAll("g")
       .data(nodeArray, function(d) { return d.name + d.depth; });
 
   // Add breadcrumb and label for entering nodes.
-  var entering = g.enter().append("svg:g");
+  let entering = g.enter().append("svg:g");
 
   entering.append("svg:polygon")
       .attr("points", breadcrumbPoints)
@@ -201,15 +188,15 @@ function updateBreadcrumbs(nodeArray, percentageString) {
       .attr("text-anchor", "middle")
       .text(function(d) { return d.name; })
       .style("font-size", function(d){ // scale the font size according to text length
-        var newLength = d.name.length;
-        var charsPerLine = 50;
+        let newLength = d.name.length;
+        let charsPerLine = 50;
         if (newLength < charsPerLine){
             return "15px";
         }
         else {
-            var newEmSize = charsPerLine / newLength;
-            var textBaseSize = 15;    
-            var newFontSize = (2 - newEmSize)*newEmSize * textBaseSize;
+            let newEmSize = charsPerLine / newLength;
+            let textBaseSize = 15;    
+            let newFontSize = (2 - newEmSize)*newEmSize * textBaseSize;
             return newFontSize + "px";
         }
     });

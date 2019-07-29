@@ -1,5 +1,5 @@
 PLUGIN_VERSION=0.1.0
-PLUGIN_ID=dss-plugin-hierarchical-charts
+PLUGIN_ID=hierarchical-charts
 
 plugin:
 	cat plugin.json|json_pp > /dev/null

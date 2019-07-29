@@ -9,7 +9,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 def build_complete_df(df, unit_column, parent_column, size_column, color_column=None):
-    
     df_copy = df.dropna(how='any').copy()
     unit_set = set(df_copy[unit_column])
     parent_set = set(df_copy[parent_column])
@@ -24,7 +23,6 @@ def build_complete_df(df, unit_column, parent_column, size_column, color_column=
     return dfx
 
 def generate_tree_structure(df, unit_column, parent_column, size_column):
-    
     def _create_dict(row):
         return {
             'name': row[unit_column],
@@ -50,8 +48,10 @@ def reformat_data():
         dataset_name = request.args.get('dataset_name')
         unit_column = request.args.get('unit_column')
         parent_column = request.args.get('parent_column')
-        size_column = request.args.get('size_column')        
-        df = dataiku.Dataset(dataset_name).get_dataframe(columns=[unit_column, parent_column, size_column])        
+        size_column = request.args.get('size_column')   
+        df = dataiku.Dataset(dataset_name).get_dataframe(columns=[unit_column, parent_column, size_column])
+        if any(df[size_column] < 0):
+            raise ValueError('Value column contains negative value')
         dfx = build_complete_df(df, unit_column, parent_column, size_column)
         tree = generate_tree_structure(dfx, unit_column, parent_column, size_column)
         return json.dumps(tree)

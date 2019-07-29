@@ -1,4 +1,4 @@
-@import '/plugins/hierarchical-charts/resource/style.css';
+@import '/plugins/dss-plugin-hierarchical-charts/resource/style.css';
 
 
 #main {
@@ -33,10 +33,10 @@
 
 #explanation {
   position: absolute;
-  top: 235px;
-  left: 205px;
+  top: 42%;
+  left: 32%;
   width: 140px;
-  text-align: right;
+  text-align: center;
   color: #666;
   z-index: -1;
 }

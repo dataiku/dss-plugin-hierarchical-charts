@@ -4,6 +4,9 @@ import pandas as pd
 import numpy as np
 import json
 import json
+import traceback 
+import logging
+logger = logging.getLogger(__name__)
 
 def generate_rule(node):
     if node.get('values'):
@@ -72,40 +75,44 @@ def generate_tree_structure(df, unit_column, parent_column, size_column):
 
 @app.route('/parse_json')
 def parse_json():
-    folder_name = request.args.get('folder_name')
-    path_to_the_file = request.args.get('path_to_the_file')
-        
-    folder = dataiku.Folder(folder_name)
-    tree_path = folder.get_path() + path_to_the_file
-    with open(tree_path) as handle:
-        tree = json.loads(handle.read())
+    try:
+        folder_name = request.args.get('folder_name')
+        path_to_the_file = request.args.get('path_to_the_file')
 
-    rule_dict = {}
-    for node_index, node in tree['saved_tree'].get('tree').items():
-        rule = generate_rule(node)
-        rule_dict[node_index] = node
-        rule_dict[node_index]['rule'] = rule
+        folder = dataiku.Folder(folder_name)
+        tree_path = folder.get_path() + path_to_the_file
+        with open(tree_path) as handle:
+            tree = json.loads(handle.read())
 
-    df_dict = {'child_rule':[], 'parent_rule':[], 'num_observations':[]}
-    for node_index, node in rule_dict.items():
-        parent_id = str(node.get('parent_id'))
-        if parent_id != '-1':
-            try:
-                df_dict['parent_rule'].append(rule_dict[str(node.get('parent_id'))].get('rule'))
-            except:
-                continue
-        else:
-            df_dict['parent_rule'].append(None)
-        
-        df_dict['child_rule'].append(node.get('rule'))
-        df_dict['num_observations'].append(node.get('samples')[0])
+        rule_dict = {}
+        for node_index, node in tree['saved_tree'].get('tree').items():
+            rule = generate_rule(node)
+            rule_dict[node_index] = node
+            rule_dict[node_index]['rule'] = rule
 
-    tree_rules_df = pd.DataFrame(df_dict) # Compute a Pandas dataframe to write into tree_rules
-    unit_column = 'child_rule' 
-    parent_column = 'parent_rule'
-    size_column = 'num_observations'
-    dfx = build_complete_df(tree_rules_df, unit_column, parent_column, size_column)
-    tree = generate_tree_structure(dfx, unit_column, parent_column, size_column)
-    return json.dumps(tree)
+        df_dict = {'child_rule':[], 'parent_rule':[], 'num_observations':[]}
+        for node_index, node in rule_dict.items():
+            parent_id = str(node.get('parent_id'))
+            if parent_id != '-1':
+                try:
+                    df_dict['parent_rule'].append(rule_dict[str(node.get('parent_id'))].get('rule'))
+                except:
+                    continue
+            else:
+                df_dict['parent_rule'].append(None)
+
+            df_dict['child_rule'].append(node.get('rule'))
+            df_dict['num_observations'].append(node.get('samples')[0])
+
+        tree_rules_df = pd.DataFrame(df_dict) # Compute a Pandas dataframe to write into tree_rules
+        unit_column = 'child_rule' 
+        parent_column = 'parent_rule'
+        size_column = 'num_observations'
+        dfx = build_complete_df(tree_rules_df, unit_column, parent_column, size_column)
+        tree = generate_tree_structure(dfx, unit_column, parent_column, size_column)
+        return json.dumps(tree)
+    except: 
+        logger.error(traceback.format_exc())
+        return traceback.format_exc(), 500
 
 

@@ -3,6 +3,9 @@ from flask import request
 import pandas as pd
 import numpy as np
 import json
+import traceback
+import logging
+logger = logging.getLogger(__name__)
 
 def build_complete_df(df, unit_column, parent_column, size_column, color_column=None):
     
@@ -22,14 +25,18 @@ def build_complete_df(df, unit_column, parent_column, size_column, color_column=
 
 @app.route('/reformat_data')
 def reformat_data():
-    dataset_name = request.args.get('dataset_name')
-    unit_column = request.args.get('unit_column')
-    parent_column = request.args.get('parent_column')
-    size_column = request.args.get('size_column')
-    color_column = request.args.get('color_column')
-    if color_column == '': 
-        color_column = None
-    columns_list = [x for x in [unit_column, parent_column, size_column, color_column] if x is not None]
-    df = dataiku.Dataset(dataset_name).get_dataframe(columns=columns_list)        
-    dfx = build_complete_df(df, unit_column, parent_column, size_column, color_column) 
-    return json.dumps({'result':[columns_list] + dfx.values.tolist()})
+    try: 
+        dataset_name = request.args.get('dataset_name')
+        unit_column = request.args.get('unit_column')
+        parent_column = request.args.get('parent_column')
+        size_column = request.args.get('size_column')
+        color_column = request.args.get('color_column')
+        if color_column == '': 
+            color_column = None
+        columns_list = [x for x in [unit_column, parent_column, size_column, color_column] if x is not None]
+        df = dataiku.Dataset(dataset_name).get_dataframe(columns=columns_list)        
+        dfx = build_complete_df(df, unit_column, parent_column, size_column, color_column) 
+        return json.dumps({'result':[columns_list] + dfx.values.tolist()})
+    except:
+        logger.error(traceback.format_exc())
+        return traceback.format_exc(), 500

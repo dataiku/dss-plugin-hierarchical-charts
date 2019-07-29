@@ -1,8 +1,12 @@
 import dataiku
+from flask import render_template
 from flask import request
 import pandas as pd
 import numpy as np
 import json
+import traceback
+import logging
+logger = logging.getLogger(__name__)
 
 def build_complete_df(df, unit_column, parent_column, size_column, color_column=None):
     
@@ -38,21 +42,22 @@ def generate_tree_structure(df, unit_column, parent_column, size_column):
         parent_index = next(x for x, val in enumerate(raw_nodes) if val['name']==raw_node['parent'])
         parent_node = raw_nodes[parent_index]
         parent_node['children'].append(raw_node)
-        
     return tree
-
 
 @app.route('/reformat_data')
 def reformat_data():
-    dataset_name = request.args.get('dataset_name')
-    unit_column = request.args.get('unit_column')
-    parent_column = request.args.get('parent_column')
-    size_column = request.args.get('size_column')
-    df = dataiku.Dataset(dataset_name).get_dataframe(columns=[unit_column, parent_column, size_column])        
-    dfx = build_complete_df(df, unit_column, parent_column, size_column)
-    print(dfx)
-    tree = generate_tree_structure(dfx, unit_column, parent_column, size_column)
-    return json.dumps(tree)
+    try:
+        dataset_name = request.args.get('dataset_name')
+        unit_column = request.args.get('unit_column')
+        parent_column = request.args.get('parent_column')
+        size_column = request.args.get('size_column')        
+        df = dataiku.Dataset(dataset_name).get_dataframe(columns=[unit_column, parent_column, size_column])        
+        dfx = build_complete_df(df, unit_column, parent_column, size_column)
+        tree = generate_tree_structure(dfx, unit_column, parent_column, size_column)
+        return json.dumps(tree)
+    except:
+        logger.error(traceback.format_exc())
+        return traceback.format_exc(), 500
 
 
 

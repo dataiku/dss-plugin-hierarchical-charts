@@ -4,7 +4,6 @@ let webAppConfig = dataiku.getWebAppConfig()['webAppConfig'];
 function draw() {
     
     let data = new google.visualization.arrayToDataTable(allRows)
-    console.warn('DATA: ',allRows)
     function showFullTooltip(row, size, value) {
         if (data.getNumberOfColumns() == 4){
             return '<div style="background:#fd9; padding:10px; border-style:solid">' +
@@ -80,7 +79,6 @@ if (!window.google) {
 window.addEventListener('message', function(event) {
     if (event.data) {
         webAppConfig = JSON.parse(event.data)['webAppConfig'];
-        console.warn('EVENT START', webAppConfig); 
 
         let dataset_name = webAppConfig['dataset'];
         let unit_column = webAppConfig['unit'];

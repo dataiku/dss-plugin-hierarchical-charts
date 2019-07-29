@@ -250,7 +250,10 @@ $.getJSON(getWebAppBackendUrl('reformat_data'), {'dataset_name': dataset_name, '
             allRows = data['children'];
             draw()
         }
-    );
+    ).error(function(data){
+                webappMessages.displayFatalError('Internal Server Error: ' + data.responseText); 
+            }
+        );
 
 var counter;
 counter = 1;
@@ -269,6 +272,9 @@ window.addEventListener('message', function(event) {
                 function(data){
                     allRows = data['children'];
                     draw(first=false); 
+                }
+            ).error(function(data){
+                webappMessages.displayFatalError('Internal Server Error: ' + data.responseText); 
                 }
             );
     };

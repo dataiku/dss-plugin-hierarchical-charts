@@ -2,7 +2,7 @@
     "id": "hierarchical-charts",
     "version": "0.1.0",
     "meta": {
-        "label": "Hierarchical charts",
+        "label": "Treemap and Sunburst plugin charts",
         "description": "",
         "author": "Dataiku (Du Phan)",
         "icon": "icon-bar-chart",

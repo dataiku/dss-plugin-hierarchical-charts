@@ -247,6 +247,7 @@ counter = 1;
 window.addEventListener('message', function(event) {
     // counter is a quick fix for the duplicate event message problem
     if (event.data && counter%2==1) {
+        location.reload() // reload the html to clean the error message if exist
         webAppConfig = JSON.parse(event.data)['webAppConfig'];
         vis.selectAll("*").remove();
 

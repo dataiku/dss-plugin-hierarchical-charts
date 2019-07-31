@@ -1,0 +1,13 @@
+{
+    "id": "hierarchical-charts",
+    "version": "0.1.0",
+    "meta": {
+        "label": "Treemap and Sunburst plugin charts",
+        "description": "",
+        "author": "Dataiku (Du PHAN)",
+        "icon": "icon-bar-chart",
+        "licenseInfo": "Apache Software License",
+        "url": "https://www.dataiku.com/dss/plugins/info/hierarchical-charts.html",
+        "tags": ["Visualization"]
+    }
+}

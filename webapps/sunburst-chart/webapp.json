@@ -1,0 +1,46 @@
+{
+    "meta": {
+        "label": "Sunburst",
+        "description": "Visualize hierarchies as concentric circles",
+        "icon": "icon-sun"
+    },
+
+    "baseType": "STANDARD",
+    "hasBackend": "true",
+    "standardWebAppLibraries" : ["jquery", "dataiku", "bootstrap", "font_awesome"],
+    
+    "chart" : {
+        "datasetParamName": "dataset",
+        "leftBarLabel": "Chart parameters",
+        "topBarParams": [],
+        "topBar": "STD_FORM",
+        "leftBarParams": [
+            {
+                "name": "unit",
+                "type": "DATASET_COLUMN",
+                "datasetParamName": "dataset",
+                "label": "Unit column",
+                "description": "",
+                "mandatory": true
+            },
+            {
+                "name": "parent",
+                "type": "DATASET_COLUMN",
+                "datasetParamName": "dataset",
+                "label": "Parent column",
+                "description": "",
+                "mandatory": true
+            },
+            {
+                "name": "value",
+                "type": "DATASET_COLUMN",
+                "datasetParamName": "dataset",
+                "label": "Value column",
+                "description": "",
+                "mandatory": true
+            }
+        ],
+        "canFilter": false,
+        "canFacet": false
+    }
+}

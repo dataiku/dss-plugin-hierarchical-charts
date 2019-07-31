@@ -1,0 +1,54 @@
+{
+    "meta": {
+        "label": "Treemap chart",
+        "description": "",
+        "icon": "icon-bar-chart"
+    },
+
+    "baseType": "STANDARD",
+    "hasBackend": "true",
+    "standardWebAppLibraries" : ["jquery", "dataiku", "bootstrap", "font_awesome"],
+
+    "chart" : {
+        "datasetParamName": "dataset",
+        "leftBarLabel": "Chart parameters",
+        "topBarParams": [],
+        "leftBar": "STD_FORM",
+        "leftBarParams": [
+            {
+                "name": "unit",
+                "type": "DATASET_COLUMN",
+                "datasetParamName": "dataset",
+                "label": "Unit column",
+                "description": "",
+                "mandatory": true
+            },
+            {
+                "name": "parent",
+                "type": "DATASET_COLUMN",
+                "datasetParamName": "dataset",
+                "label": "Parent column",
+                "description": "",
+                "mandatory": true
+            },
+            {
+                "name": "size",
+                "type": "DATASET_COLUMN",
+                "datasetParamName": "dataset",
+                "label": "Size column",
+                "description": "",
+                "mandatory": true
+            },
+            {
+                "name": "color",
+                "type": "DATASET_COLUMN",
+                "datasetParamName": "dataset",
+                "label": "Color column (optional)",
+                "description": "",
+                "mandatory": false
+            }
+        ],
+        "canFilter": false,
+        "canFacet": false
+    }
+}

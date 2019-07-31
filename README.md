@@ -8,6 +8,8 @@ These charts take as input [`Unit column` (child node) , `Parent column` (the co
 These new visualizations are provided as custom charts and are available in the "Other" tab of the chart type selector.
 
 ### Treemap
+This chart is based on the [Google Charts library](https://developers.google.com/chart/) and requires internet access.
+
 When no color column is provided, the size is also used for color information.
 
 Click to zoom in a child, right-click to zoom out.

@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "meta": {
         "label": "Treemap and Sunburst plugin charts",
-        "description": "",
+        "description": "Visualize hierarchies using nested representations.",
         "author": "Dataiku (Du PHAN)",
         "icon": "icon-bar-chart",
         "licenseInfo": "Apache Software License",

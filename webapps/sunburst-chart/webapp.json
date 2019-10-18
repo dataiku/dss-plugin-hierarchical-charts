@@ -1,14 +1,14 @@
 {
     "meta": {
         "label": "Sunburst",
-        "description": "Visualize hierarchies as concentric circles",
+        "description": "Visualize hierarchies using nested circles",
         "icon": "icon-sun"
     },
 
     "baseType": "STANDARD",
     "hasBackend": "true",
     "standardWebAppLibraries" : ["jquery", "dataiku", "bootstrap", "font_awesome"],
-    
+
     "chart" : {
         "datasetParamName": "dataset",
         "leftBarLabel": "Chart parameters",

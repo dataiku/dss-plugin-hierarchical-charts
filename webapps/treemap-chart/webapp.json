@@ -1,6 +1,6 @@
 {
     "meta": {
-        "label": "Treemap chart",
+        "label": "Treemap",
         "description": "Visualize hierarchies using nested rectangles.",
         "icon": "icon-bar-chart"
     },

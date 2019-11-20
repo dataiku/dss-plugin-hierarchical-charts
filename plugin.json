@@ -1,6 +1,6 @@
 {
     "id": "hierarchical-charts",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "meta": {
         "label": "Hierarchical charts",
         "description": "Visualize hierarchies using nested representations.",
